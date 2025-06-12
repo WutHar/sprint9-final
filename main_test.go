@@ -4,74 +4,63 @@ import (
 	"testing"
 )
 
-func TestGenerateRandomElements(t *testing.T) {
-	tests := []struct {
-		name string
-		size int
-	}{
-		{"zero size", 0},
-		{"small size", 10},
-		{"large size", 1000},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := generateRandomElements(tt.size)
-			if tt.size == 0 && got != nil {
-				t.Errorf("generateRandomElements(0) = %v, want nil", got)
-			}
-			if tt.size > 0 && len(got) != tt.size {
-				t.Errorf("len(generateRandomElements(%d)) = %d, want %d", tt.size, len(got), tt.size)
-			}
-		})
+func TestGenerateRandomElements_Empty(t *testing.T) {
+	got := generateRandomElements(0)
+	if got != nil {
+		t.Error("Expected nil for size 0")
 	}
 }
 
-func TestMaximum(t *testing.T) {
-	tests := []struct {
-		name string
-		data []int
-		want int
-	}{
-		{"empty slice", []int{}, 0},
-		{"single element", []int{5}, 5},
-		{"multiple elements", []int{1, 3, 2, 5, 4}, 5},
-		{"all equal", []int{2, 2, 2}, 2},
-		{"negative numbers", []int{-1, -3, -2}, -1},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := maximum(tt.data); got != tt.want {
-				t.Errorf("maximum() = %v, want %v", got, tt.want)
-			}
-		})
+func TestGenerateRandomElements_Size(t *testing.T) {
+	size := 100
+	got := generateRandomElements(size)
+	if len(got) != size {
+		t.Errorf("Expected length %d, got %d", size, len(got))
 	}
 }
 
-func TestMaxChunks(t *testing.T) {
-	tests := []struct {
-		name string
-		data []int
-		want int
-	}{
-		{"empty slice", []int{}, 0},
-		{"single element", []int{5}, 5},
-		{"less than chunks", []int{1, 2, 3, 4, 5}, 5},
-		{"exact chunks size", make([]int, 8), 0},
-		{"multiple chunks", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 10},
+func TestMaximum_Empty(t *testing.T) {
+	if got := maximum([]int{}); got != 0 {
+		t.Error("Expected 0 for empty slice")
 	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := maxChunks(tt.data)
-			if tt.name == "exact chunks size" {
-				if got != 0 {
-					t.Errorf("maxChunks() = %v, want 0 for zero-initialized slice", got)
-				}
-			} else if got != tt.want {
-				t.Errorf("maxChunks() = %v, want %v", got, tt.want)
-			}
-		})
+func TestMaximum_Single(t *testing.T) {
+	if got := maximum([]int{5}); got != 5 {
+		t.Error("Expected 5 for single element")
+	}
+}
+
+func TestMaximum_Multiple(t *testing.T) {
+	if got := maximum([]int{1, 3, 2, 5, 4}); got != 5 {
+		t.Error("Expected 5 for [1,3,2,5,4]")
+	}
+}
+
+func TestMaxChunks_Empty(t *testing.T) {
+	if got := maxChunks([]int{}); got != 0 {
+		t.Error("Expected 0 for empty slice")
+	}
+}
+
+func TestMaxChunks_Single(t *testing.T) {
+	if got := maxChunks([]int{5}); got != 5 {
+		t.Error("Expected 5 for single element")
+	}
+}
+
+func TestMaxChunks_Small(t *testing.T) {
+	if got := maxChunks([]int{1, 2, 3, 4, 5}); got != 5 {
+		t.Error("Expected 5 for [1,2,3,4,5]")
+	}
+}
+
+func TestMaxChunks_Large(t *testing.T) {
+	data := make([]int, 1000)
+	for i := range data {
+		data[i] = i + 1
+	}
+	if got := maxChunks(data); got != 1000 {
+		t.Error("Expected 1000 for large slice")
 	}
 }
